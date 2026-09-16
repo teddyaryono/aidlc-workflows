@@ -49,6 +49,12 @@ is the pipeline contract — no contribution files on pipeline stages. On resume
 read `directive.pipeline.completed` and dispatch only the first missing link;
 multi-repo entries are qualified as `<repo>:<agent>`.
 
+How the codebase is *discovered* is source-selected per repo (Step 2: CodeKB MCP
+replaces the code scan when it is reachable and ready, otherwise the filesystem
+scan runs). What the stage *owes* never changes: the Step 1 store guard and
+snapshot, both link receipts, the compare-and-swap publish, and the approval
+gate hold on either path.
+
 ## Steps
 
 ### Step 1: Check Conditions
@@ -214,10 +220,109 @@ rescan = the whole repo; focused scan = the intent's area, named explicitly in
 the brief) and require the scan results' Scan Coverage section (re-artifacts.md
 template) to list what was actually analyzed deeply vs skimmed. Include the
 repo's snapshot `paths`; the deeply analyzed result MUST stay within that set.
+The brief also carries the evidence-source instruction below — CodeKB MCP first,
+filesystem scan as the fallback — and requires the handoff to declare which
+source that repo actually used.
 
-For each repo selected for scanning, the developer scans `<repo>`'s codebase
-(the sibling dir `<workspace>/<repo>/`; for a single-repo intent this is the
-whole codebase) for:
+#### Evidence source: CodeKB MCP first, filesystem scan fallback
+
+Each repo's scan draws its structural evidence from EXACTLY ONE source, resolved
+by the developer link before it inspects anything. Never blend the two, and do
+not re-attempt CodeKB after falling back inside the same attempt.
+
+**Priority 1 — CodeKB MCP (the sole structural source when the readiness gate
+passes).** CodeKB is an optional external MCP server serving pre-computed
+structural analysis (spaces/hyperspaces, component inventories, call graphs,
+dependency edges). Nothing ships with AI-DLC; it is reachable only when the
+operator configured it and the persona is granted it. When the gate passes for
+`<repo>`, CodeKB answers the scan questions below and the developer performs NO
+codebase exploration for structure: no source reads, no grep, no directory
+walks, no package enumeration from disk. On this path CodeKB IS the scan — the
+ordinary discovery steps are replaced, not supplemented. (Naming note: the
+CodeKB MCP server is unrelated to this framework's own local `codekb/` store,
+which is what this stage publishes.)
+
+**Priority 2 — Filesystem scan (fallback, and the default path).** When the gate
+fails for `<repo>` — tools not exposed, no indexed space for that repo, coverage
+short of the snapshot paths, or an index that is not current — discard every
+CodeKB observation for that repo and run the ordinary scan of
+`<workspace>/<repo>/` exactly as described below. This is the normal path and the
+only one that needs no external service.
+
+Resolve the gate per repo. A multi-repo intent may take CodeKB for one repo and
+the filesystem fallback for another; each repo's chain records its own source.
+
+##### CodeKB readiness gate (all three checks, else fall back immediately)
+
+1. **Tools exposed.** CodeKB MCP tools are present in the developer persona's
+   configuration. If they are not, fall back without probing — an unconfigured
+   server and a narrowed `tools:` allowlist both land here.
+2. **Indexed and covering.** `list_spaces` / `list_hyperspaces` (skip discovery
+   when the human supplied an id), then `get_space_details` /
+   `get_hyperspace_details` reports a NON-ZERO indexed component count for the
+   space that maps to `<repo>`, and that space's components cover the snapshot
+   `paths` this scan is bound to. Zero components, no space for the repo, or
+   coverage narrower than the chosen breadth FAILS the gate.
+3. **Index current for this repo.** The index must describe the source this stage
+   is about to publish knowledge about. Use the server's own freshness signal
+   when it reports one; when it does not, spot-check up to 5 CodeKB component
+   paths against disk. A reported-stale index, a human-signaled stale index, or
+   any missing spot-check path FAILS the gate — `codekb-publish` compares source
+   bytes against the pre-scan snapshot and cannot detect a stale index, so this
+   check is the only guard against publishing knowledge the source no longer
+   supports.
+
+##### CodeKB query plan (this stage owns the deep tier)
+
+Reverse engineering is the stage that USES structural detail, so the depth the
+composer agent is forbidden belongs here. Still ask the minimum that fills the
+nine artifacts, and stop once they are answered:
+
+- **Inventory and structure** — `get_space_details` / `get_stats` for component
+  counts, languages, and the test-vs-source ratio; `get_component_from_description`
+  or `search_components` scoped to the snapshot paths to enumerate components with
+  their types and file locations (feeds component-inventory.md, code-structure.md).
+- **Relationships** — `show_dependencies` for internal cross-package and external
+  dependency edges (feeds dependencies.md, architecture.md).
+- **Behavior** — `trace_flow` (depth up to 5) on the components carrying the
+  intent's business transactions, one trace per transaction, to source the
+  Interaction Diagrams section architecture.md MUST contain.
+- **Surfaces** — targeted `get_component_from_description` for entrypoints,
+  handlers, and public API components (feeds api-documentation.md and the
+  business framing in business-overview.md).
+
+Budget per repo: at most 20 calls for a full rescan, 10 for a focused scan. If
+the budget is spent with artifacts still unanswered, record those areas as
+skimmed rather than continuing to query.
+
+**Gap-fill reads — the only filesystem access allowed on the CodeKB path.**
+CodeKB serves structure, not release metadata. Dependency and build manifests,
+lockfiles, CI/lint/coverage configuration, and the repo README sit outside what
+it answers, and technology-stack.md, dependencies.md, and
+code-quality-assessment.md may not be guessed. Read those specific files
+directly, name every one of them in the handoff's Evidence Source block, and read
+nothing else — a gap-fill read is never licence to resume exploring the codebase.
+
+##### Recording CodeKB-derived coverage
+
+Scan Coverage still reports repo-relative paths, because the scope block, the
+snapshot bound, and `codekb-scope-diff` all speak paths, not component ids.
+Translate every CodeKB component into the repo-relative path it reports, and:
+
+- Deep coverage MUST stay inside the snapshot `paths`. A component whose path
+  falls outside them is either excluded, or the conductor takes a fresh snapshot
+  over the widened set and the scan repeats — the same rule as the filesystem
+  path.
+- An area CodeKB describes only at container granularity (no component-level
+  answer) is `Skimmed only`, never `Analyzed deeply`.
+- Name the space/hyperspace ids, the tools called, and the freshness evidence in
+  the handoff's Evidence Source block, so the architect can carry provenance into
+  reverse-engineering-timestamp.md and Step 5 can disclose it.
+
+For each repo selected for scanning, the developer resolves the following about
+`<repo>` from that repo's chosen evidence source — on the fallback path by
+scanning the codebase (the sibling dir `<workspace>/<repo>/`; for a single-repo
+intent this is the whole codebase), on the CodeKB path by querying the index:
 - All packages, modules, and their purposes
 - Build systems, configuration, and dependency relationships
 - External and internal APIs (endpoints, contracts, methods)
@@ -225,6 +330,10 @@ whole codebase) for:
 - Test directories, test frameworks, coverage configuration
 - Code quality indicators (linting, CI/CD, documentation)
 - Technical debt signals
+
+On the CodeKB path, library versions, coverage configuration, and the lint/CI
+signals are exactly the questions the bounded gap-fill reads answer; everything
+else on that list comes from the index.
 
 Developer writes the structured scan results following the Developer Code Scan
 Template in `{{HARNESS_DIR}}/knowledge/aidlc-developer-agent/re-artifacts.md`:
@@ -238,8 +347,13 @@ This file is the durable pipeline handoff. The developer's return summary names
 the handoff path and any concerns only; it does not repeat the scan body.
 
 After the developer return has been read, verify the handoff file exists and
-contains `## Developer Code Scan Results`, `### Scan Coverage`, and
-`## Handoff Summary`. Then mint link 1 before dispatching the architect:
+contains `## Developer Code Scan Results`, `### Evidence Source`,
+`### Scan Coverage`, and `## Handoff Summary`. The Evidence Source block MUST
+name that repo's source as `codekb` or `filesystem`; a CodeKB block additionally
+names the space/hyperspace ids, the tools called, the freshness evidence, and
+every gap-fill file read. A handoff that claims `codekb` while also reporting
+broad source reads or directory walks is a blended scan — reject it and redispatch
+on one source. Then mint link 1 before dispatching the architect:
 
 ```
 bun {{HARNESS_DIR}}/tools/aidlc-log.ts link --stage reverse-engineering --link aidlc-developer-agent --artifact "<developer scan handoff path>" [--repo <repo>] [--single]
@@ -259,6 +373,14 @@ Delegate to Task tool with aidlc-architect-agent:
 - Pass the developer scan handoff path, not its body; the architect reads that file
 - Include workspace state from aidlc-state.md
 
+The architect inherits the repo's evidence source from the handoff's Evidence
+Source block and stays on it. On a `codekb` handoff the architect does NOT open
+application source to fill a gap; it may spend at most 5 targeted CodeKB calls
+(typically `trace_flow` or `show_dependencies`) when the handoff leaves an
+interaction diagram or dependency edge unresolved, and otherwise records the gap
+as skimmed coverage. On a `filesystem` handoff nothing about the architect link
+changes.
+
 Architect synthesizes scan results into a complete 9-artifact candidate:
 1. **business-overview.md** — Business domain, purpose, key functionality
 2. **architecture.md** — System architecture, patterns, component relationships (with Mermaid diagrams). MUST include Interaction Diagrams section depicting how business transactions are implemented across components (sequence or flow diagrams).
@@ -268,7 +390,7 @@ Architect synthesizes scan results into a complete 9-artifact candidate:
 6. **technology-stack.md** — Languages, frameworks, libraries with versions
 7. **dependencies.md** — External dependencies, internal cross-package dependencies
 8. **code-quality-assessment.md** — Test coverage, linting, CI/CD, documentation quality, tech debt
-9. **reverse-engineering-timestamp.md** - Records when reverse engineering was performed (date, commit hash if available) and MUST end with the structured `## Scope of Analysis` block from the re-artifacts.md template. Fill it from the developer's Scan Coverage and, for a focused merge, the existing store according to the rules below - it records what is ACTUALLY verified deeply, not what was aspired to. This is the freshness/staleness marker the Step 1 rerun guard reads.
+9. **reverse-engineering-timestamp.md** - Records when reverse engineering was performed (date, commit hash if available), carries a `**Evidence source**: codekb | filesystem` line taken from the handoff (with the space/hyperspace ids and index-freshness evidence on the CodeKB path, so a later rerun can judge what produced this store), and MUST end with the structured `## Scope of Analysis` block from the re-artifacts.md template. Fill it from the developer's Scan Coverage and, for a focused merge, the existing store according to the rules below - it records what is ACTUALLY verified deeply, not what was aspired to. This is the freshness/staleness marker the Step 1 rerun guard reads.
 
 Choose the write behavior recorded in Step 1:
 
@@ -405,6 +527,10 @@ Use stage-protocol.md completion template:
   each repo's `aidlc/spaces/<active-space>/codekb/<repo>/` set — the directory
   `codekb-path --repo <repo>` printed in Step 3); identify reused repos whose
   existing stores were left unchanged
+- **Evidence source per scanned repo** — `codekb` (naming the space/hyperspace and
+  its index freshness) or `filesystem`. When a repo fell back after CodeKB was
+  reachable, say which gate check failed, so the human can fix the index and rerun
+  instead of assuming the store was CodeKB-grounded
 - **For every repo whose Step 3 compare returned NARROWER**, the summary MUST
   carry a repo-labeled warning before the question, quoting that repo's tool
   coverage list verbatim:

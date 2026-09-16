@@ -17,7 +17,7 @@
 
 | Stage | Name | What This Agent Does |
 |-------|------|----------------------|
-| reverse-engineering | Reverse Engineering (Code scan step) | Performs deep code scan to extract dependency graphs, API endpoints, database models, and technical debt indicators |
+| reverse-engineering | Reverse Engineering (Code scan step) | Performs deep code scan to extract dependency graphs, API endpoints, database models, and technical debt indicators. Resolves one evidence source per repo first: an optional CodeKB MCP index when its readiness gate passes (CodeKB then replaces the scan), otherwise the filesystem scan; the handoff declares which |
 | code-generation | Code Generation | Implements units of work from architectural specifications as production-quality code |
 
 ### Support Stages

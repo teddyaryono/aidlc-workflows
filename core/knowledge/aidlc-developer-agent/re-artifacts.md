@@ -21,6 +21,14 @@ All RE artifacts are created under `aidlc/spaces/<active-space>/codekb/<repo>/` 
 ```markdown
 ## Developer Code Scan Results
 
+### Evidence Source
+- **Source**: [codekb | filesystem]
+- **CodeKB spaces**: [space/hyperspace ids queried, or "n/a" on the filesystem path]
+- **CodeKB tools called**: [tool names with call counts, or "n/a"]
+- **Index freshness evidence**: [server freshness signal, or the spot-checked component paths; "n/a" on the filesystem path]
+- **Gap-fill files read**: [manifests, lockfiles, CI/lint config, README read on the CodeKB path; "n/a" on the filesystem path]
+- **Fallback reason**: [which readiness-gate check failed, or "n/a" — CodeKB was not reachable / not applicable]
+
 ### Scan Coverage
 - **Analyzed deeply**: [repo-relative dirs/files actually read and understood, one per line]
 - **Skimmed only**: [areas noted at directory granularity without deep reading]
@@ -107,6 +115,15 @@ shallow:
 ````
 
 Rules:
+- Exactly one evidence source per repo (stage Step 2). CodeKB MCP replaces the code
+  scan when its readiness gate passes; otherwise the filesystem scan runs. Never blend
+  them, and never claim `codekb` alongside broad source reads or directory walks.
+- On the CodeKB path, translate component ids into the repo-relative paths CodeKB
+  reports before filling `analyzed.paths`; container-granularity answers belong in
+  `shallow.paths`. The snapshot `paths` still bound deep coverage.
+- Carry the Evidence Source block's `Source` value (plus the CodeKB space ids and
+  freshness evidence) into `reverse-engineering-timestamp.md` so a rerun can see what
+  produced the store.
 - `kind: full` only when the scan genuinely covered the whole repo deeply; `analyzed.paths` MUST include the repo root (`./`). Anything less is `kind: partial`.
 - `kind: partial` MUST NOT include `./` in `analyzed.paths`.
 - `analyzed.paths` entries are repo-relative, directories end with `/`, no glob characters.
