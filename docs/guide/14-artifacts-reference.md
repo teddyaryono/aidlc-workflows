@@ -111,8 +111,8 @@ rescan replaces those nine files, while a focused scan merges the newly
 analyzed area into them and preserves prior prose outside it. Verified-current
 coverage is accumulated as a union; stale or unverifiable prior deep coverage
 is retained as prose and demoted to shallow
-(`reverse-engineering-timestamp.md` records when the last scan ran and what
-it covered). Pre-scan source/store generations and a locked all-artifact
+(`reverse-engineering-timestamp.md` records when the last scan ran, what
+it covered, and whether a CodeKB MCP index or the filesystem scan produced it). Pre-scan source/store generations and a locked all-artifact
 publication prevent a source change from being mislabeled current and prevent
 concurrent focused scans from silently replacing each other. Intents therefore
 read the newest scan of the repo, not the one

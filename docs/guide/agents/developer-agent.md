@@ -12,7 +12,7 @@ Workspace Detection (0.2) used to be led by the aidlc-developer-agent as a subag
 
 | Stage | Phase | Description |
 |-------|-------|-------------|
-| 2.1 Reverse Engineering (code scan) | Inception | Deep code scan producing structured analysis for architect synthesis |
+| 2.1 Reverse Engineering (code scan) | Inception | Deep code scan producing structured analysis for architect synthesis — sourced from an optional CodeKB MCP index when one is reachable and current for the repo, otherwise from a filesystem scan |
 | 3.5 Code Generation | Construction | Implements units of work from design specifications (per unit) |
 
 ## Stages Supported
