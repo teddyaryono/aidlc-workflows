@@ -1,0 +1,692 @@
+{
+  "name": "aidlc-classic",
+  "description": "AI-DLC classic scope translated to a Kiro workflow — \"V1-style ceremony through Inception and Construction - the implicit default\" (Standard depth, 18/33 stages).",
+  "inputs": {
+    "intent": "prompt",
+    "run_dir": "string",
+    "codekb_dir": "string"
+  },
+  "steps": [
+    {
+      "type": "sequence",
+      "id": "phase-initialization",
+      "steps": [
+        {
+          "type": "repeat",
+          "id": "workspace-scaffold-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/initialization/workspace-scaffold/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "workspace-scaffold",
+              "agent": "wf-coder",
+              "prompt": "AI-DLC stage 0.1 Workspace Scaffold — phase `initialization`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/initialization/workspace-scaffold.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Ensure-exists the per-intent record and in-scope phase dirs, idempotent (creates on demand, skips existing)\nDeclared inputs: none (first stage after session start)\nDeclared outputs: the per-intent record tree (one dir per in-scope phase + verification dir) and the space-level knowledge/ dir\n\nRevision entry: read `{{run_dir}}/initialization/workspace-scaffold/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nNo upstream AI-DLC artifacts on this scope's path: work from the intent and the repository.\n\nThis stage produces no document artifacts; its effect is on the workspace and the run record.\n\nCollaboration (AI-DLC mode `inline`): do the work yourself. Do not dispatch sub-agents for this stage.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/initialization/workspace-scaffold/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written."
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "workspace-detection-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/initialization/workspace-detection/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "workspace-detection",
+              "agent": "wf-coder",
+              "prompt": "AI-DLC stage 0.2 Workspace Detection — phase `initialization`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/initialization/workspace-detection.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Scans and classifies workspace — auto-proceeds (no approval gate)\nDeclared inputs: none (scans filesystem)\nDeclared outputs: workspace classification (greenfield/brownfield), technology stack detection\n\nRevision entry: read `{{run_dir}}/initialization/workspace-detection/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nNo upstream AI-DLC artifacts on this scope's path: work from the intent and the repository.\n\nThis stage produces no document artifacts; its effect is on the workspace and the run record.\n\nCollaboration (AI-DLC mode `inline`): do the work yourself. Do not dispatch sub-agents for this stage.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/initialization/workspace-detection/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written."
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "state-init-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/initialization/state-init/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "state-init",
+              "agent": "wf-coder",
+              "prompt": "AI-DLC stage 0.3 State Initialization — phase `initialization`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/initialization/state-init.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Creates full populated state file and determines routing — auto-proceeds\nDeclared inputs: workspace classification from workspace-detection, scope from orchestrator\nDeclared outputs: <record>/aidlc-state.md (full populated version, engine-resolved)\n\nRevision entry: read `{{run_dir}}/initialization/state-init/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nNo upstream AI-DLC artifacts on this scope's path: work from the intent and the repository.\n\nThis stage produces no document artifacts; its effect is on the workspace and the run record.\n\nCollaboration (AI-DLC mode `inline`): do the work yourself. Do not dispatch sub-agents for this stage.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/initialization/state-init/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sequence",
+      "id": "phase-inception",
+      "steps": [
+        {
+          "type": "repeat",
+          "id": "reverse-engineering-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/reverse-engineering/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "reverse-engineering",
+              "agent": "aidlc-developer-agent",
+              "prompt": "AI-DLC stage 2.1 Reverse Engineering — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/reverse-engineering.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Execute when project is brownfield. On rerun the Step 1 guard checks store freshness (codekb-scope-diff) - verified-CURRENT stores may be reused by human choice, anything else rescans. Skip for greenfield projects.\nDeclared inputs: <record>/aidlc-state.md\nDeclared outputs: aidlc/spaces/<active-space>/codekb/<repo>/ (9 artifacts: business-overview.md, architecture.md, code-structure.md, api-documentation.md, component-inventory.md, technology-stack.md, dependencies.md, code-quality-assessment.md, reverse-engineering-timestamp.md)\n\nRevision entry: read `{{run_dir}}/inception/reverse-engineering/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nNo upstream AI-DLC artifacts on this scope's path: work from the intent and the repository.\n\nWrite exactly these artifacts:\n- {{codekb_dir}}/business-overview.md\n- {{codekb_dir}}/architecture.md\n- {{codekb_dir}}/code-structure.md\n- {{codekb_dir}}/api-documentation.md\n- {{codekb_dir}}/component-inventory.md\n- {{codekb_dir}}/technology-stack.md\n- {{codekb_dir}}/dependencies.md\n- {{codekb_dir}}/code-quality-assessment.md\n- {{codekb_dir}}/reverse-engineering-timestamp.md\n\nCollaboration (AI-DLC mode `pipeline`, serialized chain): aidlc-developer-agent -> aidlc-architect-agent. Each link sees all upstream work and advances the artifacts directly; record each link's handoff under `{{codekb_dir}}/contributions/` before the next link starts.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/reverse-engineering/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "business_overview": "{{codekb_dir}}/business-overview.md",
+                "architecture": "{{codekb_dir}}/architecture.md",
+                "code_structure": "{{codekb_dir}}/code-structure.md",
+                "api_documentation": "{{codekb_dir}}/api-documentation.md",
+                "component_inventory": "{{codekb_dir}}/component-inventory.md",
+                "technology_stack": "{{codekb_dir}}/technology-stack.md",
+                "dependencies": "{{codekb_dir}}/dependencies.md",
+                "code_quality_assessment": "{{codekb_dir}}/code-quality-assessment.md",
+                "reverse_engineering_timestamp": "{{codekb_dir}}/reverse-engineering-timestamp.md"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "practices-discovery-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/practices-discovery/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "practices-discovery",
+              "agent": "aidlc-pipeline-deploy-agent",
+              "prompt": "AI-DLC stage 2.2 Practices Discovery — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/practices-discovery.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always rerun for freshness. Brownfield discovers from evidence + reverse-engineering artifacts. Greenfield prompts user via structured questions using org.md defaults.\nDeclared inputs: <record>/aidlc-state.md + (brownfield) reverse-engineering evidence\nDeclared outputs: team-practices.md, discovered-rules.md, evidence.md, practices-discovery-timestamp.md, plus one contribution file per support agent. On affirmation, content is promoted to aidlc/spaces/<active-space>/memory/team.md and project.md.\n\nRevision entry: read `{{run_dir}}/inception/practices-discovery/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- code-structure (optional): {{artifacts.code_structure}}\n- technology-stack (optional): {{artifacts.technology_stack}}\n- dependencies (optional): {{artifacts.dependencies}}\n- code-quality-assessment (optional): {{artifacts.code_quality_assessment}}\n- architecture (optional): {{artifacts.architecture}}\n- business-overview (optional): {{artifacts.business_overview}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/practices-discovery/team-practices.md\n- {{run_dir}}/inception/practices-discovery/discovered-rules.md\n- {{run_dir}}/inception/practices-discovery/evidence.md\n- {{run_dir}}/inception/practices-discovery/practices-discovery-timestamp.md\n\nCollaboration (AI-DLC mode `subagent`, hub-and-spoke): draft as the lead, then consult each support persona as a mutually blind sub-agent (aidlc-quality-agent, aidlc-developer-agent, aidlc-devsecops-agent). Each support persona writes its own contribution to `{{run_dir}}/inception/practices-discovery/contributions/<agent-slug>.md`; you alone edit the artifacts listed below.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/practices-discovery/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "team_practices": "{{run_dir}}/inception/practices-discovery/team-practices.md",
+                "discovered_rules": "{{run_dir}}/inception/practices-discovery/discovered-rules.md",
+                "evidence": "{{run_dir}}/inception/practices-discovery/evidence.md",
+                "practices_discovery_timestamp": "{{run_dir}}/inception/practices-discovery/practices-discovery-timestamp.md"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "requirements-analysis-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/requirements-analysis/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "requirements-analysis",
+              "agent": "aidlc-product-agent",
+              "prompt": "AI-DLC stage 2.3 Requirements Analysis — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/requirements-analysis.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always executes — depth scales with project complexity\nDeclared inputs: RE artifacts (if brownfield), authoritative project description (project-description utility)\nDeclared outputs: requirements.md, requirements-analysis-questions.md (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/inception/requirements-analysis/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- business-overview (optional): {{artifacts.business_overview}}\n- architecture (optional): {{artifacts.architecture}}\n- code-structure (optional): {{artifacts.code_structure}}\n- team-practices (optional): {{artifacts.team_practices}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/requirements-analysis/requirements.md\n- {{run_dir}}/inception/requirements-analysis/requirements-analysis-questions.md\n\nCollaboration (AI-DLC mode `inline`): do the work yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/requirements-analysis/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "requirements": "{{run_dir}}/inception/requirements-analysis/requirements.md",
+                "requirements_analysis_questions": "{{run_dir}}/inception/requirements-analysis/requirements-analysis-questions.md"
+              }
+            },
+            {
+              "type": "step",
+              "id": "requirements-analysis-review",
+              "agent": "aidlc-product-lead-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.3 Requirements Analysis. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/requirements-analysis/requirements.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/requirements-analysis/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/requirements-analysis/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "requirements_analysis_review": "{{run_dir}}/inception/requirements-analysis/review.json",
+                "requirements_analysis_gate": "{{run_dir}}/inception/requirements-analysis/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "user-stories-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/user-stories/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "user-stories",
+              "agent": "aidlc-product-agent",
+              "prompt": "AI-DLC stage 2.4 User Stories — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/user-stories.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Execute when user-facing features, multiple personas, complex business logic, or cross-team work is involved. Skip for pure refactoring, isolated bug fixes, infrastructure-only changes, or developer tooling.\nDeclared inputs: <record>/inception/requirements-analysis/requirements.md, RE artifacts (if brownfield)\nDeclared outputs: stories.md, personas.md, user-stories-assessment.md, traceability.json (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/inception/user-stories/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- requirements: {{artifacts.requirements}}\n- business-overview (optional): {{artifacts.business_overview}}\n- component-inventory (optional): {{artifacts.component_inventory}}\n- team-practices (optional): {{artifacts.team_practices}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/user-stories/stories.md\n- {{run_dir}}/inception/user-stories/personas.md\n- {{run_dir}}/inception/user-stories/user-stories-assessment.md\n- {{run_dir}}/inception/user-stories/traceability.json\n\nCollaboration (AI-DLC mode `mob`, mesh): run one room with aidlc-design-agent, aidlc-developer-agent, aidlc-quality-agent. Allow cross-talk, record dissent in `{{run_dir}}/inception/user-stories/contributions/<agent-slug>.md`, and surface any judgement-call objection to the person mid-stage with send_message severity warning rather than resolving it yourself.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/user-stories/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "stories": "{{run_dir}}/inception/user-stories/stories.md",
+                "personas": "{{run_dir}}/inception/user-stories/personas.md",
+                "user_stories_assessment": "{{run_dir}}/inception/user-stories/user-stories-assessment.md",
+                "traceability_from_user_stories": "{{run_dir}}/inception/user-stories/traceability.json"
+              }
+            },
+            {
+              "type": "step",
+              "id": "user-stories-review",
+              "agent": "aidlc-product-lead-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.4 User Stories. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/user-stories/stories.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/user-stories/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/user-stories/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "user_stories_review": "{{run_dir}}/inception/user-stories/review.json",
+                "user_stories_gate": "{{run_dir}}/inception/user-stories/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "refined-mockups-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/refined-mockups/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "refined-mockups",
+              "agent": "aidlc-design-agent",
+              "prompt": "AI-DLC stage 2.5 Refined Mockups — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/refined-mockups.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Execute when user-facing UI exists and rough mockups were produced in Ideation; for APIs, refine interaction diagrams\nDeclared inputs: Rough mockups from rough-mockups stage, user stories from user-stories stage, requirements from requirements-analysis stage\nDeclared outputs: mockups.md, interaction-spec.md, design-system-mapping.md, accessibility-checklist.md, refined-mockups-questions.md (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/inception/refined-mockups/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- stories (optional): {{artifacts.stories}}\n- requirements: {{artifacts.requirements}}\n- team-practices (optional): {{artifacts.team_practices}}\nAn optional input that does not exist is not an input — proceed without it.\n\nDeclared inputs whose producing stage is off the `classic` path, so they will not exist: wireframes, user-flow. This absence is by design — degrade gracefully, infer what you need from the intent and the repository, and record the gap in your artifacts rather than blocking on it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/refined-mockups/mockups.md\n- {{run_dir}}/inception/refined-mockups/interaction-spec.md\n- {{run_dir}}/inception/refined-mockups/design-system-mapping.md\n- {{run_dir}}/inception/refined-mockups/accessibility-checklist.md\n- {{run_dir}}/inception/refined-mockups/refined-mockups-questions.md\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-product-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/refined-mockups/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "mockups": "{{run_dir}}/inception/refined-mockups/mockups.md",
+                "interaction_spec": "{{run_dir}}/inception/refined-mockups/interaction-spec.md",
+                "design_system_mapping": "{{run_dir}}/inception/refined-mockups/design-system-mapping.md",
+                "accessibility_checklist": "{{run_dir}}/inception/refined-mockups/accessibility-checklist.md",
+                "refined_mockups_questions": "{{run_dir}}/inception/refined-mockups/refined-mockups-questions.md"
+              }
+            },
+            {
+              "type": "step",
+              "id": "refined-mockups-review",
+              "agent": "aidlc-product-lead-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.5 Refined Mockups. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/refined-mockups/mockups.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/refined-mockups/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/refined-mockups/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "refined_mockups_review": "{{run_dir}}/inception/refined-mockups/review.json",
+                "refined_mockups_gate": "{{run_dir}}/inception/refined-mockups/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "domain-design-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/domain-design/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "domain-design",
+              "agent": "aidlc-architect-agent",
+              "prompt": "AI-DLC stage 2.6 Domain Design — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/domain-design.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Execute when new components or logical building blocks are needed. Skip when changes are modifications to existing components only.\nDeclared inputs: <record>/inception/requirements-analysis/requirements.md, <record>/inception/user-stories/stories.md (if produced), RE artifacts (if brownfield)\nDeclared outputs: components.md (fenced ```yaml component catalogue plus a human-readable mermaid diagram and summary table), decisions.md (Architecture Decision Records), and traceability.json — all under this stage's record dir, engine-resolved\n\nRevision entry: read `{{run_dir}}/inception/domain-design/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- requirements: {{artifacts.requirements}}\n- stories (optional): {{artifacts.stories}}\n- architecture (optional): {{artifacts.architecture}}\n- component-inventory (optional): {{artifacts.component_inventory}}\n- team-practices (optional): {{artifacts.team_practices}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/domain-design/components.md\n- {{run_dir}}/inception/domain-design/decisions.md\n- {{run_dir}}/inception/domain-design/traceability.json\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-aws-platform-agent, aidlc-design-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/domain-design/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "components": "{{run_dir}}/inception/domain-design/components.md",
+                "decisions": "{{run_dir}}/inception/domain-design/decisions.md",
+                "traceability_from_domain_design": "{{run_dir}}/inception/domain-design/traceability.json"
+              }
+            },
+            {
+              "type": "step",
+              "id": "domain-design-review",
+              "agent": "aidlc-architecture-reviewer-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.6 Domain Design. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/domain-design/components.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/domain-design/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/domain-design/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "domain_design_review": "{{run_dir}}/inception/domain-design/review.json",
+                "domain_design_gate": "{{run_dir}}/inception/domain-design/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "units-generation-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/units-generation/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "units-generation",
+              "agent": "aidlc-architect-agent",
+              "prompt": "AI-DLC stage 2.7 Units Generation — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/units-generation.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always executes when in scope. Produces the dependency DAG that Stage 2.9 Delivery Planning consumes for Bolt sequencing. In the compiled scope grid, 2.7 (Units Generation) and 2.9 (Delivery Planning) travel together — both EXECUTE or both SKIP per scope.\nDeclared inputs: <record>/inception/domain-design/components.md, <record>/inception/requirements-analysis/requirements.md, <record>/inception/user-stories/stories.md (if produced)\nDeclared outputs: unit-of-work.md, unit-of-work-dependency.md, unit-of-work-story-map.md, traceability.json (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/inception/units-generation/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- components: {{artifacts.components}}\n- decisions (optional): {{artifacts.decisions}}\n- requirements: {{artifacts.requirements}}\n- stories (optional): {{artifacts.stories}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/units-generation/unit-of-work.md\n- {{run_dir}}/inception/units-generation/unit-of-work-dependency.md\n- {{run_dir}}/inception/units-generation/unit-of-work-story-map.md\n- {{run_dir}}/inception/units-generation/traceability.json\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-delivery-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/units-generation/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "unit_of_work": "{{run_dir}}/inception/units-generation/unit-of-work.md",
+                "unit_of_work_dependency": "{{run_dir}}/inception/units-generation/unit-of-work-dependency.md",
+                "unit_of_work_story_map": "{{run_dir}}/inception/units-generation/unit-of-work-story-map.md",
+                "traceability_from_units_generation": "{{run_dir}}/inception/units-generation/traceability.json"
+              }
+            },
+            {
+              "type": "step",
+              "id": "units-generation-review",
+              "agent": "aidlc-architecture-reviewer-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.7 Units Generation. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/units-generation/unit-of-work.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/units-generation/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/units-generation/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "units_generation_review": "{{run_dir}}/inception/units-generation/review.json",
+                "units_generation_gate": "{{run_dir}}/inception/units-generation/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "contract-design-gate-loop",
+          "maxIterations": 5,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/contract-design/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "contract-design",
+              "agent": "aidlc-architect-agent",
+              "prompt": "AI-DLC stage 2.8 Contract Design — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/contract-design.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Execute when the system has any formal contract to pin down — an inter-unit boundary (more than one unit that must integrate) OR a unit that exposes a public/external API consumed outside the system. Skip only for a single self-contained unit with no inter-unit boundaries and no externally consumed API.\nDeclared inputs: <record>/inception/units-generation/unit-of-work.md, <record>/inception/units-generation/unit-of-work-dependency.md, <record>/inception/domain-design/components.md (if produced), <record>/inception/requirements-analysis/requirements.md\nDeclared outputs: contract-summary.md (under this stage's record dir, engine-resolved) — a human-readable overview of every contract (inter-unit boundaries and public/external APIs), each with a fenced spec block (OpenAPI / AsyncAPI / shared schema) inline\n\nRevision entry: read `{{run_dir}}/inception/contract-design/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- unit-of-work: {{artifacts.unit_of_work}}\n- unit-of-work-dependency: {{artifacts.unit_of_work_dependency}}\n- components (optional): {{artifacts.components}}\n- requirements (optional): {{artifacts.requirements}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/contract-design/contract-summary.md\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-aws-platform-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/inception/contract-design/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+              "artifacts": {
+                "contract_summary": "{{run_dir}}/inception/contract-design/contract-summary.md"
+              }
+            },
+            {
+              "type": "step",
+              "id": "contract-design-review",
+              "agent": "aidlc-architecture-reviewer-agent",
+              "prompt": "Independent review and human gate for AI-DLC stage 2.8 Contract Design. Review class: `advisory`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/inception/contract-design/contract-summary.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/inception/contract-design/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nThis review is advisory: your verdict informs the person, it does not decide for them. Record findings honestly either way.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/contract-design/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "contract_design_review": "{{run_dir}}/inception/contract-design/review.json",
+                "contract_design_gate": "{{run_dir}}/inception/contract-design/gate.json"
+              }
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "delivery-planning-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/inception/delivery-planning/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "delivery-planning",
+              "agent": "aidlc-delivery-agent",
+              "prompt": "AI-DLC stage 2.9 Delivery Planning — phase `inception`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/inception/delivery-planning.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always executes — capstone Inception stage, produces the detailed execution plan for Construction and Operation\nDeclared inputs: All Inception artifacts (requirements, stories, mockups, architecture, units)\nDeclared outputs: bolt-plan.md, team-allocation.md, risk-and-sequencing-rationale.md, external-dependency-map.md, delivery-planning-questions.md (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/inception/delivery-planning/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- requirements: {{artifacts.requirements}}\n- stories (optional): {{artifacts.stories}}\n- mockups (optional): {{artifacts.mockups}}\n- components: {{artifacts.components}}\n- unit-of-work: {{artifacts.unit_of_work}}\n- unit-of-work-dependency: {{artifacts.unit_of_work_dependency}}\n- unit-of-work-story-map (optional): {{artifacts.unit_of_work_story_map}}\n- contract-summary (optional): {{artifacts.contract_summary}}\n- team-practices (optional): {{artifacts.team_practices}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/inception/delivery-planning/bolt-plan.md\n- {{run_dir}}/inception/delivery-planning/team-allocation.md\n- {{run_dir}}/inception/delivery-planning/risk-and-sequencing-rationale.md\n- {{run_dir}}/inception/delivery-planning/external-dependency-map.md\n- {{run_dir}}/inception/delivery-planning/delivery-planning-questions.md\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-architect-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/inception/delivery-planning/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "bolt_plan": "{{run_dir}}/inception/delivery-planning/bolt-plan.md",
+                "team_allocation": "{{run_dir}}/inception/delivery-planning/team-allocation.md",
+                "risk_and_sequencing_rationale": "{{run_dir}}/inception/delivery-planning/risk-and-sequencing-rationale.md",
+                "external_dependency_map": "{{run_dir}}/inception/delivery-planning/external-dependency-map.md",
+                "delivery_planning_questions": "{{run_dir}}/inception/delivery-planning/delivery-planning-questions.md"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sequence",
+      "id": "phase-construction",
+      "steps": [
+        {
+          "type": "repeat",
+          "id": "functional-design-per-unit",
+          "maxIterations": 12,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/units-status.json",
+              "jsonPath": "remaining",
+              "value": 0
+            }
+          },
+          "steps": [
+            {
+              "type": "repeat",
+              "id": "functional-design-gate-loop",
+              "maxIterations": 5,
+              "onMaxIterations": "pause",
+              "stopCondition": {
+                "fileCheck": {
+                  "path": "{{run_dir}}/construction/functional-design/gate.json",
+                  "jsonPath": "decision",
+                  "value": "approved"
+                }
+              },
+              "steps": [
+                {
+                  "type": "step",
+                  "id": "functional-design",
+                  "agent": "aidlc-architect-agent",
+                  "prompt": "AI-DLC stage 3.1 Functional Design — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/functional-design.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: New data models, complex business logic, or business rules need design. Skip if simple logic changes with no new business logic.\nDeclared inputs: unit-of-work.md, unit-of-work-story-map.md, requirements.md, domain-design components.md, contract-design contract-summary.md (if produced)\nDeclared outputs: entities.md, rules.md, functional-spec.md, traceability.json, CONDITIONAL: frontend-components.md (under this stage's per-unit record dir, engine-resolved); per-kind applicability via produces_kinds (untagged unit: all). entities.md and rules.md each carry a fenced ```yaml source-of-truth block; functional-spec.md is the source of truth for workflows and state machines and carries derived ER-diagram and rules-summary views.\n\nRevision entry: read `{{run_dir}}/construction/functional-design/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- unit-of-work: {{artifacts.unit_of_work}}\n- unit-of-work-story-map (optional): {{artifacts.unit_of_work_story_map}}\n- requirements: {{artifacts.requirements}}\n- components: {{artifacts.components}}\n- contract-summary (optional): {{artifacts.contract_summary}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/functional-design/entities.md\n- {{run_dir}}/construction/functional-design/rules.md\n- {{run_dir}}/construction/functional-design/functional-spec.md\n- {{run_dir}}/construction/functional-design/traceability.json\n\nPer-unit execution (AI-DLC `for_each: unit-of-work`). Kiro repeats have no loop variable, so this step owns the iteration:\n1. Read `{{run_dir}}/construction/units-status.json`. Create it on the first iteration from the units of work in {{artifacts.unit_of_work}}, as `{\"units\": [{\"id\": \"...\", \"stages\": {}}], \"remaining\": <n>}`.\n2. Pick the first unit whose entry does not record this stage as done. Work that one unit only.\n3. Write the artifacts above for the current unit, and keep a durable per-unit copy under `{{run_dir}}/construction/functional-design/units/<unit-id>/`.\n4. Mark this stage done for that unit, recompute `remaining` as the number of units still missing this stage, and write the file back before you finish.\n5. The gate file `{{run_dir}}/construction/functional-design/gate.json` is shared across units, so record `\"unit\": \"<unit-id>\"` in it. A decision recorded for a different unit is not a decision about this one: treat it as absent.\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-developer-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, linter, type-check, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/construction/functional-design/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+                  "artifacts": {
+                    "entities": "{{run_dir}}/construction/functional-design/entities.md",
+                    "rules": "{{run_dir}}/construction/functional-design/rules.md",
+                    "functional_spec": "{{run_dir}}/construction/functional-design/functional-spec.md",
+                    "traceability_from_functional_design": "{{run_dir}}/construction/functional-design/traceability.json"
+                  }
+                },
+                {
+                  "type": "step",
+                  "id": "functional-design-review",
+                  "agent": "aidlc-architecture-reviewer-agent",
+                  "prompt": "Independent review and human gate for AI-DLC stage 3.1 Functional Design. Review class: `adversarial`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/construction/functional-design/functional-spec.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/construction/functional-design/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nUse `REVISE` while any blocking or major finding stands. Never approve to let the run proceed.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/functional-design/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n   Include `\"unit\": \"<unit-id>\"` so the decision is attributable to the unit you worked on.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+                  "artifacts": {
+                    "functional_design_review": "{{run_dir}}/construction/functional-design/review.json",
+                    "functional_design_gate": "{{run_dir}}/construction/functional-design/gate.json"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "nfr-requirements-per-unit",
+          "maxIterations": 12,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/units-status.json",
+              "jsonPath": "remaining",
+              "value": 0
+            }
+          },
+          "steps": [
+            {
+              "type": "repeat",
+              "id": "nfr-requirements-gate-loop",
+              "maxIterations": 5,
+              "onMaxIterations": "pause",
+              "stopCondition": {
+                "fileCheck": {
+                  "path": "{{run_dir}}/construction/nfr-requirements/gate.json",
+                  "jsonPath": "decision",
+                  "value": "approved"
+                }
+              },
+              "steps": [
+                {
+                  "type": "step",
+                  "id": "nfr-requirements",
+                  "agent": "aidlc-architect-agent",
+                  "prompt": "AI-DLC stage 3.2 NFR Requirements — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/nfr-requirements.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Performance, security, scalability, reliability, or observability requirements needed, or tech stack selection needed. Skip if no NFR requirements and tech stack already determined.\nDeclared inputs: functional design artifacts, requirements.md, RE artifacts\nDeclared outputs: performance-requirements.md, security-requirements.md, scalability-requirements.md, reliability-requirements.md, observability-requirements.md, tech-stack-decisions.md, traceability.json (under this stage's per-unit record dir, engine-resolved); per-kind applicability via produces_kinds (untagged unit: all)\n\nRevision entry: read `{{run_dir}}/construction/nfr-requirements/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- functional-spec: {{artifacts.functional_spec}}\n- rules: {{artifacts.rules}}\n- requirements: {{artifacts.requirements}}\n- contract-summary (optional): {{artifacts.contract_summary}}\n- technology-stack (optional): {{artifacts.technology_stack}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/nfr-requirements/performance-requirements.md\n- {{run_dir}}/construction/nfr-requirements/security-requirements.md\n- {{run_dir}}/construction/nfr-requirements/scalability-requirements.md\n- {{run_dir}}/construction/nfr-requirements/reliability-requirements.md\n- {{run_dir}}/construction/nfr-requirements/observability-requirements.md\n- {{run_dir}}/construction/nfr-requirements/tech-stack-decisions.md\n- {{run_dir}}/construction/nfr-requirements/traceability.json\n\nPer-unit execution (AI-DLC `for_each: unit-of-work`). Kiro repeats have no loop variable, so this step owns the iteration:\n1. Read `{{run_dir}}/construction/units-status.json`. Create it on the first iteration from the units of work in {{artifacts.unit_of_work}}, as `{\"units\": [{\"id\": \"...\", \"stages\": {}}], \"remaining\": <n>}`.\n2. Pick the first unit whose entry does not record this stage as done. Work that one unit only.\n3. Write the artifacts above for the current unit, and keep a durable per-unit copy under `{{run_dir}}/construction/nfr-requirements/units/<unit-id>/`.\n4. Mark this stage done for that unit, recompute `remaining` as the number of units still missing this stage, and write the file back before you finish.\n5. The gate file `{{run_dir}}/construction/nfr-requirements/gate.json` is shared across units, so record `\"unit\": \"<unit-id>\"` in it. A decision recorded for a different unit is not a decision about this one: treat it as absent.\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-devsecops-agent, aidlc-compliance-agent, aidlc-quality-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, linter, type-check, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/construction/nfr-requirements/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+                  "artifacts": {
+                    "performance_requirements": "{{run_dir}}/construction/nfr-requirements/performance-requirements.md",
+                    "security_requirements": "{{run_dir}}/construction/nfr-requirements/security-requirements.md",
+                    "scalability_requirements": "{{run_dir}}/construction/nfr-requirements/scalability-requirements.md",
+                    "reliability_requirements": "{{run_dir}}/construction/nfr-requirements/reliability-requirements.md",
+                    "observability_requirements": "{{run_dir}}/construction/nfr-requirements/observability-requirements.md",
+                    "tech_stack_decisions": "{{run_dir}}/construction/nfr-requirements/tech-stack-decisions.md",
+                    "traceability_from_nfr_requirements": "{{run_dir}}/construction/nfr-requirements/traceability.json"
+                  }
+                },
+                {
+                  "type": "step",
+                  "id": "nfr-requirements-review",
+                  "agent": "aidlc-architecture-reviewer-agent",
+                  "prompt": "Independent review and human gate for AI-DLC stage 3.2 NFR Requirements. Review class: `adversarial`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/construction/nfr-requirements/security-requirements.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/construction/nfr-requirements/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nUse `REVISE` while any blocking or major finding stands. Never approve to let the run proceed.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/nfr-requirements/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n   Include `\"unit\": \"<unit-id>\"` so the decision is attributable to the unit you worked on.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+                  "artifacts": {
+                    "nfr_requirements_review": "{{run_dir}}/construction/nfr-requirements/review.json",
+                    "nfr_requirements_gate": "{{run_dir}}/construction/nfr-requirements/gate.json"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "nfr-design-per-unit",
+          "maxIterations": 12,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/units-status.json",
+              "jsonPath": "remaining",
+              "value": 0
+            }
+          },
+          "steps": [
+            {
+              "type": "repeat",
+              "id": "nfr-design-gate-loop",
+              "maxIterations": 5,
+              "onMaxIterations": "pause",
+              "stopCondition": {
+                "fileCheck": {
+                  "path": "{{run_dir}}/construction/nfr-design/gate.json",
+                  "jsonPath": "decision",
+                  "value": "approved"
+                }
+              },
+              "steps": [
+                {
+                  "type": "step",
+                  "id": "nfr-design",
+                  "agent": "aidlc-architect-agent",
+                  "prompt": "AI-DLC stage 3.3 NFR Design — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/nfr-design.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: NFR Requirements was executed and NFR patterns need design. Skip if NFR Requirements was skipped.\nDeclared inputs: NFR requirements artifacts, functional design artifacts\nDeclared outputs: performance-design.md, security-design.md, scalability-design.md, reliability-design.md, observability-design.md, logical-components.md, traceability.json (under this stage's per-unit record dir, engine-resolved); per-kind applicability via produces_kinds (untagged unit: all)\n\nRevision entry: read `{{run_dir}}/construction/nfr-design/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- performance-requirements: {{artifacts.performance_requirements}}\n- security-requirements: {{artifacts.security_requirements}}\n- scalability-requirements: {{artifacts.scalability_requirements}}\n- reliability-requirements: {{artifacts.reliability_requirements}}\n- observability-requirements: {{artifacts.observability_requirements}}\n- tech-stack-decisions: {{artifacts.tech_stack_decisions}}\n- functional-spec: {{artifacts.functional_spec}}\n- contract-summary (optional): {{artifacts.contract_summary}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/nfr-design/performance-design.md\n- {{run_dir}}/construction/nfr-design/security-design.md\n- {{run_dir}}/construction/nfr-design/scalability-design.md\n- {{run_dir}}/construction/nfr-design/reliability-design.md\n- {{run_dir}}/construction/nfr-design/observability-design.md\n- {{run_dir}}/construction/nfr-design/logical-components.md\n- {{run_dir}}/construction/nfr-design/traceability.json\n\nPer-unit execution (AI-DLC `for_each: unit-of-work`). Kiro repeats have no loop variable, so this step owns the iteration:\n1. Read `{{run_dir}}/construction/units-status.json`. Create it on the first iteration from the units of work in {{artifacts.unit_of_work}}, as `{\"units\": [{\"id\": \"...\", \"stages\": {}}], \"remaining\": <n>}`.\n2. Pick the first unit whose entry does not record this stage as done. Work that one unit only.\n3. Write the artifacts above for the current unit, and keep a durable per-unit copy under `{{run_dir}}/construction/nfr-design/units/<unit-id>/`.\n4. Mark this stage done for that unit, recompute `remaining` as the number of units still missing this stage, and write the file back before you finish.\n5. The gate file `{{run_dir}}/construction/nfr-design/gate.json` is shared across units, so record `\"unit\": \"<unit-id>\"` in it. A decision recorded for a different unit is not a decision about this one: treat it as absent.\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-aws-platform-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, linter, type-check, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/construction/nfr-design/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+                  "artifacts": {
+                    "performance_design": "{{run_dir}}/construction/nfr-design/performance-design.md",
+                    "security_design": "{{run_dir}}/construction/nfr-design/security-design.md",
+                    "scalability_design": "{{run_dir}}/construction/nfr-design/scalability-design.md",
+                    "reliability_design": "{{run_dir}}/construction/nfr-design/reliability-design.md",
+                    "observability_design": "{{run_dir}}/construction/nfr-design/observability-design.md",
+                    "logical_components": "{{run_dir}}/construction/nfr-design/logical-components.md",
+                    "traceability_from_nfr_design": "{{run_dir}}/construction/nfr-design/traceability.json"
+                  }
+                },
+                {
+                  "type": "step",
+                  "id": "nfr-design-review",
+                  "agent": "aidlc-architecture-reviewer-agent",
+                  "prompt": "Independent review and human gate for AI-DLC stage 3.3 NFR Design. Review class: `adversarial`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/construction/nfr-design/security-design.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/construction/nfr-design/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nUse `REVISE` while any blocking or major finding stands. Never approve to let the run proceed.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/nfr-design/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n   Include `\"unit\": \"<unit-id>\"` so the decision is attributable to the unit you worked on.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+                  "artifacts": {
+                    "nfr_design_review": "{{run_dir}}/construction/nfr-design/review.json",
+                    "nfr_design_gate": "{{run_dir}}/construction/nfr-design/gate.json"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "infrastructure-design-per-unit",
+          "maxIterations": 12,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/units-status.json",
+              "jsonPath": "remaining",
+              "value": 0
+            }
+          },
+          "steps": [
+            {
+              "type": "repeat",
+              "id": "infrastructure-design-gate-loop",
+              "maxIterations": 5,
+              "onMaxIterations": "pause",
+              "stopCondition": {
+                "fileCheck": {
+                  "path": "{{run_dir}}/construction/infrastructure-design/gate.json",
+                  "jsonPath": "decision",
+                  "value": "approved"
+                }
+              },
+              "steps": [
+                {
+                  "type": "step",
+                  "id": "infrastructure-design",
+                  "agent": "aidlc-aws-platform-agent",
+                  "prompt": "AI-DLC stage 3.4 Infrastructure Design — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/infrastructure-design.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Infrastructure services need mapping, deployment architecture required, or cloud resources needed. Skip if no infrastructure changes and infrastructure already defined.\nDeclared inputs: NFR design artifacts, domain design components.md, functional design\nDeclared outputs: infrastructure-specification.md (deployment + services + shared, tabular), monitoring-design.md (tabular), cicd-pipeline.md, traceability.json (under this stage's per-unit record dir, engine-resolved); per-kind applicability via produces_kinds (a spec unit owes none)\n\nRevision entry: read `{{run_dir}}/construction/infrastructure-design/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- performance-design: {{artifacts.performance_design}}\n- security-design: {{artifacts.security_design}}\n- scalability-design: {{artifacts.scalability_design}}\n- reliability-design: {{artifacts.reliability_design}}\n- observability-design: {{artifacts.observability_design}}\n- logical-components: {{artifacts.logical_components}}\n- components: {{artifacts.components}}\n- functional-spec: {{artifacts.functional_spec}}\n- contract-summary (optional): {{artifacts.contract_summary}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/infrastructure-design/infrastructure-specification.md\n- {{run_dir}}/construction/infrastructure-design/monitoring-design.md\n- {{run_dir}}/construction/infrastructure-design/cicd-pipeline.md\n- {{run_dir}}/construction/infrastructure-design/traceability.json\n\nPer-unit execution (AI-DLC `for_each: unit-of-work`). Kiro repeats have no loop variable, so this step owns the iteration:\n1. Read `{{run_dir}}/construction/units-status.json`. Create it on the first iteration from the units of work in {{artifacts.unit_of_work}}, as `{\"units\": [{\"id\": \"...\", \"stages\": {}}], \"remaining\": <n>}`.\n2. Pick the first unit whose entry does not record this stage as done. Work that one unit only.\n3. Write the artifacts above for the current unit, and keep a durable per-unit copy under `{{run_dir}}/construction/infrastructure-design/units/<unit-id>/`.\n4. Mark this stage done for that unit, recompute `remaining` as the number of units still missing this stage, and write the file back before you finish.\n5. The gate file `{{run_dir}}/construction/infrastructure-design/gate.json` is shared across units, so record `\"unit\": \"<unit-id>\"` in it. A decision recorded for a different unit is not a decision about this one: treat it as absent.\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-devsecops-agent, aidlc-compliance-agent) yourself. Do not dispatch sub-agents for this stage.\n\nAnswer review (AI-DLC `summary_confirmation: required`): before writing any artifact, write the stage questions file, present the consolidated answers with send_message severity `warning`, and wait for the exact reply `Looks correct`. Treat anything else as a correction to apply before you continue.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, linter, type-check, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/construction/infrastructure-design/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+                  "artifacts": {
+                    "infrastructure_specification": "{{run_dir}}/construction/infrastructure-design/infrastructure-specification.md",
+                    "monitoring_design": "{{run_dir}}/construction/infrastructure-design/monitoring-design.md",
+                    "cicd_pipeline": "{{run_dir}}/construction/infrastructure-design/cicd-pipeline.md",
+                    "traceability_from_infrastructure_design": "{{run_dir}}/construction/infrastructure-design/traceability.json"
+                  }
+                },
+                {
+                  "type": "step",
+                  "id": "infrastructure-design-review",
+                  "agent": "aidlc-architecture-reviewer-agent",
+                  "prompt": "Independent review and human gate for AI-DLC stage 3.4 Infrastructure Design. Review class: `adversarial`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/construction/infrastructure-design/cicd-pipeline.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/construction/infrastructure-design/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nUse `REVISE` while any blocking or major finding stands. Never approve to let the run proceed.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/infrastructure-design/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n   Include `\"unit\": \"<unit-id>\"` so the decision is attributable to the unit you worked on.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+                  "artifacts": {
+                    "infrastructure_design_review": "{{run_dir}}/construction/infrastructure-design/review.json",
+                    "infrastructure_design_gate": "{{run_dir}}/construction/infrastructure-design/gate.json"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "code-generation-per-unit",
+          "maxIterations": 12,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/units-status.json",
+              "jsonPath": "remaining",
+              "value": 0
+            }
+          },
+          "steps": [
+            {
+              "type": "repeat",
+              "id": "code-generation-gate-loop",
+              "maxIterations": 5,
+              "onMaxIterations": "pause",
+              "stopCondition": {
+                "fileCheck": {
+                  "path": "{{run_dir}}/construction/code-generation/gate.json",
+                  "jsonPath": "decision",
+                  "value": "approved"
+                }
+              },
+              "steps": [
+                {
+                  "type": "step",
+                  "id": "code-generation",
+                  "agent": "aidlc-developer-agent",
+                  "prompt": "AI-DLC stage 3.5 Code Generation — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/code-generation.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always executes for every unit in the execution plan.\nDeclared inputs: ALL prior design artifacts for this unit\nDeclared outputs: application code + code-generation-plan.md, code-generation-questions.md, unit-test-instructions.md, code-summary.md, traceability.json (under this stage's per-unit record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/construction/code-generation/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- functional-spec (optional): {{artifacts.functional_spec}}\n- rules (optional): {{artifacts.rules}}\n- entities (optional): {{artifacts.entities}}\n- contract-summary (optional): {{artifacts.contract_summary}}\n- performance-design (optional): {{artifacts.performance_design}}\n- security-design (optional): {{artifacts.security_design}}\n- infrastructure-specification (optional): {{artifacts.infrastructure_specification}}\n- unit-of-work: {{artifacts.unit_of_work}}\n- requirements: {{artifacts.requirements}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/code-generation/code-generation-plan.md\n- {{run_dir}}/construction/code-generation/unit-test-instructions.md\n- {{run_dir}}/construction/code-generation/code-summary.md\n- {{run_dir}}/construction/code-generation/traceability.json\n\nPer-unit execution (AI-DLC `for_each: unit-of-work`). Kiro repeats have no loop variable, so this step owns the iteration:\n1. Read `{{run_dir}}/construction/units-status.json`. Create it on the first iteration from the units of work in {{artifacts.unit_of_work}}, as `{\"units\": [{\"id\": \"...\", \"stages\": {}}], \"remaining\": <n>}`.\n2. Pick the first unit whose entry does not record this stage as done. Work that one unit only.\n3. Write the artifacts above for the current unit, and keep a durable per-unit copy under `{{run_dir}}/construction/code-generation/units/<unit-id>/`.\n4. Mark this stage done for that unit, recompute `remaining` as the number of units still missing this stage, and write the file back before you finish.\n5. The gate file `{{run_dir}}/construction/code-generation/gate.json` is shared across units, so record `\"unit\": \"<unit-id>\"` in it. A decision recorded for a different unit is not a decision about this one: treat it as absent.\n\nCollaboration (AI-DLC mode `subagent`, hub-and-spoke): draft as the lead, then consult each support persona as a mutually blind sub-agent (none declared — draft and integrate alone). Each support persona writes its own contribution to `{{run_dir}}/construction/code-generation/contributions/<agent-slug>.md`; you alone edit the artifacts listed below.\n\nSensors declared for this stage (advisory): required-sections, linter, type-check, traceability. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nThis stage must write real source code to the workspace, not only planning documents. A pass that produced only Markdown has not completed this stage.\n\nAn independent reviewer runs after you and owns the human gate for this stage. Do not present the gate yourself and do not write `{{run_dir}}/construction/code-generation/gate.json`. Finish with send_message severity `success` and a one-line summary of what you produced.",
+                  "artifacts": {
+                    "code_generation_plan": "{{run_dir}}/construction/code-generation/code-generation-plan.md",
+                    "unit_test_instructions": "{{run_dir}}/construction/code-generation/unit-test-instructions.md",
+                    "code_summary": "{{run_dir}}/construction/code-generation/code-summary.md",
+                    "traceability_from_code_generation": "{{run_dir}}/construction/code-generation/traceability.json"
+                  }
+                },
+                {
+                  "type": "step",
+                  "id": "code-generation-review",
+                  "agent": "aidlc-architecture-reviewer-agent",
+                  "prompt": "Independent review and human gate for AI-DLC stage 3.5 Code Generation. Review class: `adversarial`.\n\nFollow `.kiro/aidlc-common/protocols/stage-protocol-reviewer.md` section 12a.\n\nReview this artifact and nothing else: {{run_dir}}/construction/code-generation/code-generation-plan.md\nYou did not write it and you must not edit it, or any other artifact of the stage. You judge the artifact, not the author's reasoning — you cannot see that session.\n\nWrite your verdict to {{run_dir}}/construction/code-generation/review.json as JSON:\n```json\n{\n  \"verdict\": \"APPROVED\",\n  \"artifact\": \"<artifact under review>\",\n  \"findings\": [\n    { \"id\": \"R-01\", \"severity\": \"blocking|major|minor\", \"finding\": \"...\", \"recommendation\": \"...\" }\n  ]\n}\n```\nUse `REVISE` while any blocking or major finding stands. Never approve to let the run proceed.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the review brief and then the approval question with send_message severity `warning`: the stage name, the artifact paths, your verdict, and the open findings.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/code-generation/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n   Include `\"unit\": \"<unit-id>\"` so the decision is attributable to the unit you worked on.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+                  "artifacts": {
+                    "code_generation_review": "{{run_dir}}/construction/code-generation/review.json",
+                    "code_generation_gate": "{{run_dir}}/construction/code-generation/gate.json"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repeat",
+          "id": "build-and-test-gate-loop",
+          "maxIterations": 3,
+          "onMaxIterations": "pause",
+          "stopCondition": {
+            "fileCheck": {
+              "path": "{{run_dir}}/construction/build-and-test/gate.json",
+              "jsonPath": "decision",
+              "value": "approved"
+            }
+          },
+          "steps": [
+            {
+              "type": "step",
+              "id": "build-and-test",
+              "agent": "aidlc-quality-agent",
+              "prompt": "AI-DLC stage 3.6 Build and Test — phase `construction`, scope `classic`.\n\nIntent for this run: {{intent}}\n\nAuthoritative contract: read `.kiro/aidlc-common/stages/construction/build-and-test.md` and follow its `## Steps` section exactly, together with `.kiro/aidlc-common/protocols/stage-protocol.md`. If those files are absent from this workspace, apply the summary below instead and say in one line that you did.\n\nCondition: Always executes once after all per-unit stages are finished.\nDeclared inputs: ALL code generation outputs across all units\nDeclared outputs: build-instructions.md, integration-test-instructions.md, performance-test-instructions.md, security-test-instructions.md, build-and-test-summary.md, test-results.md, cross-unit-traceability.md (under this stage's record dir, engine-resolved)\n\nRevision entry: read `{{run_dir}}/construction/build-and-test/gate.json` first. If it exists and records `\"changes-requested\"`, you are in a revision cycle — revise the existing artifacts from the recorded `feedback` rather than rewriting them from scratch, and increment `cycle` when you record the next decision. If the file is absent, this is the first pass.\n\nRead these upstream artifacts before you start:\n- code-generation-plan: {{artifacts.code_generation_plan}}\n- unit-test-instructions: {{artifacts.unit_test_instructions}}\n- code-summary: {{artifacts.code_summary}}\nAn optional input that does not exist is not an input — proceed without it.\n\nWrite exactly these artifacts:\n- {{run_dir}}/construction/build-and-test/build-instructions.md\n- {{run_dir}}/construction/build-and-test/integration-test-instructions.md\n- {{run_dir}}/construction/build-and-test/performance-test-instructions.md\n- {{run_dir}}/construction/build-and-test/security-test-instructions.md\n- {{run_dir}}/construction/build-and-test/build-and-test-summary.md\n- {{run_dir}}/construction/build-and-test/build-test-results.md\n- {{run_dir}}/construction/build-and-test/cross-unit-traceability.md\n\nCollaboration (AI-DLC mode `inline`): adopt the lead voice and the supporting voices (aidlc-devsecops-agent) yourself. Do not dispatch sub-agents for this stage.\n\nSensors declared for this stage (advisory): required-sections, upstream-coverage, type-check. Run the matching checks under `.kiro/sensors/` when they exist and report findings at the gate.\n\nHuman gate (AI-DLC `stage-protocol.md` section 2). This stage does not end on your own judgement:\n1. Present the completion message with send_message severity `warning`: the stage name, a 5-10 line table of the artifacts you produced and their top-level contents, and the artifact paths.\n2. Stop there and wait for the person. Do not decide for them and do not infer approval from silence.\n3. Record their decision in `{{run_dir}}/construction/build-and-test/gate.json` — this file, not your prose, is what ends the stage:\n```json\n{ \"decision\": \"approved\", \"feedback\": \"<their words>\", \"cycle\": 1 }\n```\n   Use `\"approved\"` only for an explicit approval (or an explicit \"Accept as-is\"). For a change request use `\"changes-requested\"` with their exact words as `feedback`; the stage then runs again and revises from that feedback.\n4. Finish with send_message severity `success` and a one-line outcome once the decision is written.",
+              "artifacts": {
+                "build_instructions": "{{run_dir}}/construction/build-and-test/build-instructions.md",
+                "integration_test_instructions": "{{run_dir}}/construction/build-and-test/integration-test-instructions.md",
+                "performance_test_instructions": "{{run_dir}}/construction/build-and-test/performance-test-instructions.md",
+                "security_test_instructions": "{{run_dir}}/construction/build-and-test/security-test-instructions.md",
+                "build_and_test_summary": "{{run_dir}}/construction/build-and-test/build-and-test-summary.md",
+                "build_test_results": "{{run_dir}}/construction/build-and-test/build-test-results.md",
+                "cross_unit_traceability": "{{run_dir}}/construction/build-and-test/cross-unit-traceability.md"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
